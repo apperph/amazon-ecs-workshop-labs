@@ -10,23 +10,8 @@ Before starting this lab, ensure you have completed Lab 2, where you created and
 
 ## Steps
 
-### Step 1: Create a Load Balancer (Optional)
 
-For better service availability and scalability, you may want to front your ECS service with a load balancer. You can skip this step if you're just experimenting with minimal configurations, but it's recommended for production scenarios.
-
-1. **Create an Application Load Balancer using the AWS Management Console:**
-
-   - Navigate to EC2 and select Load Balancers.
-   - Click "Create Load Balancer" and choose "Application Load Balancer".
-   - Configure with the following:
-     - Name: `flask-app-lb`
-     - Scheme: Internet-facing
-     - Listeners: HTTP on port 80
-     - Availability zones: Select at least two subnets in different AZs
-   - Configure security groups to allow HTTP traffic.
-   - Skip the target groups for now, you will create one while setting up the service.
-
-### Step 2: Register an ECS Task Definition (using Flask App)
+### Step 1: Register an ECS Task Definition (using Flask App)
 
 Ensure your task definition is similar to the following with your specifics:
 
@@ -60,7 +45,7 @@ Ensure your task definition is similar to the following with your specifics:
 
 * Ensure you have registered this task definition with ECS using the AWS CLI as shown in Lab 2.
 
-### Step 3: Create an ECS Service
+### Step 2: Create an ECS Service
 
 1. **Create the service using the AWS CLI:**
 
@@ -81,13 +66,27 @@ Ensure your task definition is similar to the following with your specifics:
 
 2. **Optional: Attach Load Balancer**
 
-   If you created a load balancer, associate it with your service:
-
    - Create a target group in the EC2 Management Console with Protocol: HTTP and the port your application listens on (5000).
    - Register your ECS tasks to this target group.
    - Update the load balancer listeners to point to your target group.
+  
+### Create a Load Balancer (Optional)
 
-### Step 4: Validate the Service
+For better service availability and scalability, you may want to front your ECS service with a load balancer. You can skip this step if you're just experimenting with minimal configurations, but it's recommended for production scenarios.
+
+1. **Create an Application Load Balancer using the AWS Management Console:**
+
+   - Navigate to EC2 and select Load Balancers.
+   - Click "Create Load Balancer" and choose "Application Load Balancer".
+   - Configure with the following:
+     - Name: `flask-app-lb`
+     - Scheme: Internet-facing
+     - Listeners: HTTP on port 80
+     - Availability zones: Select at least two subnets in different AZs
+   - Configure security groups to allow HTTP traffic.
+   - Skip the target groups for now, you will create one while setting up the service.
+
+### Step 3: Validate the Service
 
 1. **Monitor the Service Using AWS CLI or Console:**
 
