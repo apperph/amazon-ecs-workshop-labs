@@ -105,7 +105,14 @@ aws cloudformation create-stack --stack-name dynamic-demo --template-body file:/
 3-d. Create another stack using the same template by running this command: 
 
 ```
-aws cloudformation create-stack --stack-name dynamic-demo2 --template-body file://dynamic-cf.yml
+aws cloudformation create-stack \
+  --stack-name my-dynamic-ec2-s3-stack \
+  --template-body file://dynamic-ec2-s3-template.yaml \
+  --parameters ParameterKey=AmiId,ParameterValue=ami-0c55b159cbfafe1f0 \
+               ParameterKey=InstanceType,ParameterValue=t2.micro \
+               ParameterKey=BucketName,ParameterValue=my-dynamic-bucket-example \
+               ParameterKey=VpcId,ParameterValue=vpc-12345678 \
+               ParameterKey=SubnetId,ParameterValue=subnet-12345678
 ```
 ![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+1/Lab+2/image9.png)
 
