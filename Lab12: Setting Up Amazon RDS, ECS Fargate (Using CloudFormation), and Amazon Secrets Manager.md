@@ -160,6 +160,31 @@ Resources:
 5. Click **Next** → Configure as needed.
 6. Click **Create Stack** and wait for it to complete.
 
+### Ensure enabled exec command
+
+Make sure to rename your cluster and services.
+
+1. Check if the exec command is enabled it should return *true*
+
+
+
+```
+aws ecs describe-services \
+  --cluster <your cluster name> \
+  --services <your ecs service name> \
+  --query "services[0].enableExecuteCommand"
+```
+
+2.  Once inside run:
+
+```
+apt update
+apt install -y default-mysql-client netcat-traditional
+nc -zv database-1.xxxxxxxxxxxx.us-east-1.rds.amazonaws.com 3306  # MySQL
+```
+This code will tell you if your connection to RDS is successful.
+
+4. 
 ---
 
 
