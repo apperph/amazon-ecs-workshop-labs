@@ -99,42 +99,54 @@ sudo systemctl restart ecs
 2. Navigate to **Task definitions**.
 3. Click **Create new task definition** → **Create new task definition with JSON**.
 4. Paste the following JSON, replacing `fs-xxxxxxxx` with your EFS File System ID:
-   ```json
-   {
-       "containerDefinitions": [
-           {
-               "memory": 128,
-               "portMappings": [
-                   {
-                       "hostPort": 80,
-                       "containerPort": 80,
-                       "protocol": "tcp"
-                   }
-               ],
-               "essential": true,
-               "mountPoints": [
-                   {
-                       "containerPath": "/usr/share/nginx/html",
-                       "sourceVolume": "efs-html"
-                   }
-               ],
-               "name": "nginx",
-               "image": "public.ecr.aws/docker/library/nginx:latest"
-           }
-       ],
-       "volumes": [
-           {
-               "name": "efs-html",
-               "efsVolumeConfiguration": {
-                   "fileSystemId": "fs-xxxxxxxx",
-                   "transitEncryption": "ENABLED"
-               }
-           }
-       ],
-       "family": "efs-tutorial",
-       "executionRoleArn": "arn:aws:iam::111122223333:role/ecsTaskExecutionRole"
-   }
-   ```
+
+```json
+{
+  "family": "your-task-family-name",
+  "executionRoleArn": "arn:aws:iam::your-account-id:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::your-account-id:role/ecsTaskRole",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "volumes": [
+    {
+      "name": "efs-volume",
+      "efsVolumeConfiguration": {
+        "fileSystemId": "fs-12345678",
+        "rootDirectory": "/",
+        "transitEncryption": "ENABLED",
+        "authorizationConfig": {
+          "accessPointId": "fsap-abcdef1234567890",
+          "iam": "ENABLED"
+        }
+      }
+    }
+  ],
+  "containerDefinitions": [
+    {
+      "name": "your-container-name",
+      "image": "your-docker-image-uri",
+      "essential": true,
+      "mountPoints": [
+        {
+          "sourceVolume": "efs-volume",
+          "containerPath": "/mnt/efs"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/your-log-group",
+          "awslogs-region": "your-region",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}
+
+```
 5. Click **Create**.
 
 ---
