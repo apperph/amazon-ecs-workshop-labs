@@ -102,32 +102,35 @@ sudo systemctl restart ecs
 
 ```json
 {
-  "family": "your-task-family-name",
-  "executionRoleArn": "arn:aws:iam::your-account-id:role/ecsTaskExecutionRole",
+  "family": "your-task-family",
   "taskRoleArn": "arn:aws:iam::your-account-id:role/ecsTaskRole",
+  "executionRoleArn": "arn:aws:iam::your-account-id:role/ecsTaskExecutionRole",
   "networkMode": "awsvpc",
-  "requiresCompatibilities": ["FARGATE"],
-  "cpu": "512",
-  "memory": "1024",
+  "requiresCompatibilities": ["EC2"],
+  "cpu": "256",
+  "memory": "512",
   "volumes": [
     {
       "name": "efs-volume",
       "efsVolumeConfiguration": {
-        "fileSystemId": "fs-12345678",
+        "fileSystemId": "your-efs-filesystem-id",
         "rootDirectory": "/",
-        "transitEncryption": "ENABLED",
-        "authorizationConfig": {
-          "accessPointId": "fsap-abcdef1234567890",
-          "iam": "ENABLED"
-        }
+        "transitEncryption": "ENABLED"
       }
     }
   ],
   "containerDefinitions": [
     {
-      "name": "your-container-name",
-      "image": "your-docker-image-uri",
+      "name": "nginx",
+      "image": "nginx:latest",
       "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "hostPort": 80,
+          "protocol": "tcp"
+        }
+      ],
       "mountPoints": [
         {
           "sourceVolume": "efs-volume",
@@ -143,8 +146,13 @@ sudo systemctl restart ecs
         }
       }
     }
-  ]
+  ],
+  "runtimePlatform": {
+    "cpuArchitecture": "X86_64",
+    "operatingSystemFamily": "LINUX"
+  }
 }
+
 
 ```
 5. Click **Create**.
