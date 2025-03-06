@@ -1,5 +1,7 @@
 # Lab 13: Configuring Amazon EFS File Systems for Amazon ECS using the Console
 
+https://docs.aws.amazon.com/AmazonECS/latest/developerguide/tutorial-efs-volumes.html
+
 ## **Objective**
 This lab will guide you through configuring an Amazon Elastic File System (EFS) for Amazon Elastic Container Service (ECS) using the AWS Management Console. At the end of this lab, you will also generate a CloudFormation template to automate the setup.
 
