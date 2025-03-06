@@ -45,18 +45,31 @@ This lab will guide you through configuring an Amazon Elastic File System (EFS) 
    - **Network**: Select the VPC of your ECS cluster.
    - **Subnet**: Choose a subnet.
    - **IAM role**: Assign an IAM role with ECS permissions (`EC2InstanceProfileForECS`).
-   - **User Data**: Click **Advanced Details** and paste the following:
-     ```bash
-     #!/bin/bash
-     echo ECS_CLUSTER=EFS-tutorial >> /etc/ecs/ecs.config
-     yum update -y
-     amazon-linux-extras enable docker
-     yum install -y ecs-init
-     systemctl enable --now ecs
-     ```
+   - Under storage choose "Add Volume" and mount the filee system you created.
+  
 6. **Security Group:** Allow **HTTP (80)**, **HTTPS (443)**, and **SSH (22)**.
 7. Click **Launch** and select a key pair.
 8. Verify that the instance is running in **EC2 Instances**.
+
+9. Connect to the instance and run:
+
+```
+#Installing docker:
+sudo yum update -y
+sudo yum install -y docker
+sudo systemctl start docker
+sudo systemctl enable docker
+
+#Installing ecs agent
+sudo yum install -y ecs-init
+sudo systemctl start ecs
+sudo systemctl enable ecs
+
+#configure ecs
+echo "ECS_CLUSTER=your-cluster-name" | sudo tee -a /etc/ecs/ecs.config
+sudo systemctl restart ecs
+
+```
 
 ### **Step 3.2: Confirm EC2 Instance is Registered with ECS**
 1. Open the [ECS console](https://console.aws.amazon.com/ecs/).
