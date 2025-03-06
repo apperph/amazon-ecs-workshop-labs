@@ -7,6 +7,18 @@ This lab guides you through Dockerizing a LAMP stack with Amazon RDS as the data
 * An AWS account with IAM permissions to create RDS and Secrets Manager resources
 * Docker and Docker Compose installed
 
+  If Docker Compose is not installed, run:
+  
+```
+sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+docker-compose version
+sudo systemctl enable docker
+
+```
+
+
+
 ## Step 1: Create an Amazon RDS MySQL Instance
 
 * Log in to AWS Management Console.
