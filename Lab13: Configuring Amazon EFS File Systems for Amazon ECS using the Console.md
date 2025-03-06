@@ -102,57 +102,51 @@ sudo systemctl restart ecs
 
 ```json
 {
-  "family": "your-task-family",
-  "taskRoleArn": "arn:aws:iam::your-account-id:role/ecsTaskRole",
-  "executionRoleArn": "arn:aws:iam::your-account-id:role/ecsTaskExecutionRole",
-  "networkMode": "awsvpc",
-  "requiresCompatibilities": ["EC2"],
-  "cpu": "256",
-  "memory": "512",
-  "volumes": [
-    {
-      "name": "efs-volume",
-      "efsVolumeConfiguration": {
-        "fileSystemId": "your-efs-filesystem-id",
-        "rootDirectory": "/",
-        "transitEncryption": "ENABLED"
-      }
-    }
-  ],
-  "containerDefinitions": [
-    {
-      "name": "nginx",
-      "image": "nginx:latest",
-      "essential": true,
-      "portMappings": [
+    "family": "your-task-family",
+    "containerDefinitions": [
         {
-          "containerPort": 80,
-          "hostPort": 80,
-          "protocol": "tcp"
+            "name": "nginx",
+            "image": "public.ecr.aws/docker/library/nginx:latest",
+            "cpu": 0,
+            "portMappings": [],
+            "essential": true,
+            "environment": [],
+            "mountPoints": [
+                {
+                    "sourceVolume": "efs-volume",
+                    "containerPath": "/mnt/efs"
+                }
+            ],
+            "volumesFrom": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/carlo-task",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            },
+            "systemControls": []
         }
-      ],
-      "mountPoints": [
+    ],
+    "taskRoleArn": "arn:aws:iam::010438472482:role/ecsTaskExecutionRole",
+    "executionRoleArn": "arn:aws:iam::010438472482:role/ecsTaskExecutionRole",
+    "networkMode": "bridge",
+    "volumes": [
         {
-          "sourceVolume": "efs-volume",
-          "containerPath": "/mnt/efs"
+            "name": "efs-volume",
+            "host": {
+                "sourcePath": "/mnt/efs"
+            }
         }
-      ],
-      "logConfiguration": {
-        "logDriver": "awslogs",
-        "options": {
-          "awslogs-group": "/ecs/your-log-group",
-          "awslogs-region": "your-region",
-          "awslogs-stream-prefix": "ecs"
-        }
-      }
-    }
-  ],
-  "runtimePlatform": {
-    "cpuArchitecture": "X86_64",
-    "operatingSystemFamily": "LINUX"
-  }
+    ],
+    "placementConstraints": [],
+    "requiresCompatibilities": [
+        "EC2"
+    ],
+    "cpu": "256",
+    "memory": "512"
 }
-
 
 ```
 5. Click **Create**.
