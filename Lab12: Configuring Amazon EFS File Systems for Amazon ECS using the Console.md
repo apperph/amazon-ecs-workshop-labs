@@ -291,7 +291,7 @@ aws ecs run-task --cluster <Cluster Name> --task-definition <Task Definition Nam
 
 ---
 
-## 9: Generate CloudFormation Template**
+## 9: Generate CloudFormation Template
 9-a. Navigate to **AWS CloudFormation**.
 9-b. Click **Create Stack** → **With new resources**.
 9-c. Select **Template is ready** → **Upload a template file**.
