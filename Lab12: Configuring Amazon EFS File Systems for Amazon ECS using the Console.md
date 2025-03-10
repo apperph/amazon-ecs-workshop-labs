@@ -3,7 +3,7 @@
 https://docs.aws.amazon.com/AmazonECS/latest/developerguide/tutorial-efs-volumes.html
 
 ## **Objective**
-This lab will guide you through configuring an Amazon Elastic File System (EFS) for Amazon Elastic Container Service (ECS) using the AWS Management Console. At the end of this lab, you will also generate a CloudFormation template to automate the setup.
+This lab will guide you through configuring an Amazon Elastic File System (EFS) for Amazon Elastic Container Service (ECS) using the AWS Management Console. You will deploy ECS on both EC2 and Fargate. At the end of this lab, you will generate a CloudFormation template to automate the setup.
 
 ---
 
@@ -200,6 +200,83 @@ aws ecs run-task --cluster <Cluster Name> --task-definition <Task Definition Nam
 ![image](https://github.com/user-attachments/assets/51feba16-fb70-4154-9dfd-93fbe6c7e736)
 ---
 
+## **Optional: Deploy ECS Service on Fargate**
+Update the Task Definition for Fargate Compatibility
+1. Open the Amazon ECS console.
+2. Navigate to Task definitions.
+3. Click on your cluster and select Create new revision.
+   
+**Modify the JSON to include Fargate compatibility:**
+
+ ```
+{
+    "family": "efs-charles",
+    "containerDefinitions": [
+        {
+            "name": "nginx",
+            "image": "public.ecr.aws/docker/library/nginx:latest",
+            "cpu": 0,
+            "memory": 128,
+            "portMappings": [
+                {
+                    "containerPort": 80,
+                    "hostPort": 80,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "mountPoints": [
+                {
+                    "sourceVolume": "efs-html",
+                    "containerPath": "/usr/share/nginx/html"
+                }
+            ]
+        }
+    ],
+    "executionRoleArn": "arn:aws:iam::010438472482:role/ecsTaskExecutionRole",
+    "volumes": [
+        {
+            "name": "efs-html",
+            "efsVolumeConfiguration": {
+                "fileSystemId": "fs-xxxxxxxx",
+                "rootDirectory": "/",
+                "transitEncryption": "ENABLED"
+            }
+        }
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "networkMode": "awsvpc",
+    "cpu": "256",
+    "memory": "512"
+}
+ ```
+
+4. Click Create.
+
+**Deploy the Task Definition on Fargate**
+1. Open the Amazon ECS console → Clusters → EFS-tutorial.
+2. Navigate to Services → Click Create.
+3. Configure:
+- Launch type: Fargate
+- Task Definition: your task definition
+- Service Name: efs-service-fargate
+- Desired Tasks: 1
+- VPC and Subnets: Select the VPC and private subnets
+- Security Group: Select the security group created for ECS tasks.
+4. Click Create Service.
+5. Monitor the service to ensure tasks are running.
+
+**via Terminal**
+
+Run the following command:
+```
+aws ecs run-task --cluster <Cluster Name> --task-definition <Task Definition Name> --launch-type FARGATE --network-configuration "awsvpcConfiguration={subnets=[<Subnet IDs>],securityGroups=[<Security Group IDs>],assignPublicIp="ENABLED"}"
+```
+
+![image](https://github.com/user-attachments/assets/4d44a337-77ba-479f-9ca9-e6ed2d9546f6)
+
 ## **Step 7: Verify the Deployment**
 1. Open **Amazon ECS console** → **Clusters** → `EFS-tutorial`.
 2. Navigate to **Tasks** → Check for a **RUNNING** task.
@@ -210,6 +287,8 @@ aws ecs run-task --cluster <Cluster Name> --task-definition <Task Definition Nam
    ls /mnt/efs
    ```
 6. Verify that the **nginx container** is running with EFS mounted.
+
+![image](https://github.com/user-attachments/assets/0e6dbb40-a1b8-4b66-ad7b-3af5bde2a0e4)
 
 ---
 
