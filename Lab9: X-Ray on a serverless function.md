@@ -1,216 +1,167 @@
-## Overview:
+# Lab 9: Using AWS X-Ray on a Serverless Function
 
-This activity will demonstrate how to use X-Ray on a serverless function.
+## Overview
 
+This lab demonstrates how to instrument a serverless application with AWS X-Ray to monitor and trace requests. You will deploy an application using the AWS SAM CLI and use X-Ray to analyze its performance.
 
-## 1. Create an application using SAM CLI
+## Steps
 
-1-a. Go to Cloudshell and create an S3 bucket by running this command: 
+### Step 1: Create an Application Using SAM CLI
 
-```
-aws s3 mb s3://sagesoft-<last name>-03042025
-```
+1. **Create an S3 Bucket**
 
+   - Open AWS CloudShell and create an S3 bucket:
+   
+     ```sh
+     aws s3 mb s3://sagesoft-<last name>-03042025
+     ```
 
-1-b. Create an application by running:
+2. **Initialize the Application**
 
+   - Run the following command to update SAM and initialize your application:
+   
+     ```sh
+     pip install --upgrade aws-sam-cli
+     sam init --runtime python3.9 --name xray-demo-app
+     ```
 
-```
-#update sam
+   - Follow the configuration settings as shown in the image below:
 
-pip install --upgrade aws-sam-cli
-sam init --runtime python3.9 --name xray-demo-app
-```
+   ![SAM Init Configuration](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image2.png)
 
-Follow the configuration from the image below
+3. **Build the Application**
 
-![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image2.png)
+   - Build the application:
+   
+     ```sh
+     cd xray-demo-app/
+     sam build
+     ```
 
-1-c build the application by running:
+   ![SAM Build](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image3.png)
 
-```
-cd xray-demo-app/
-sam build
-```
+4. **Package the Application**
 
-![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image3.png)
+   - Package the application for deployment:
+   
+     ```sh
+     sam package --output-template-file packaged.yaml --s3-bucket <your-bucket-name> --no-resolve-s3
+     ```
 
+   ![SAM Package](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image4.png)
 
+5. **Deploy the Application**
 
-1-d. Package the application by running: 
+   - Deploy the packaged application:
+   
+     ```sh
+     sam deploy --template-file packaged.yaml --capabilities CAPABILITY_IAM --stack-name <your-stack-name>
+     ```
 
-```
-sam package --output-template-file packaged.yaml --s3-bucket <your-bucket-name> --no-resolve-s3
-```
+   ![SAM Deploy](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image5.png)
 
+### Step 2: Create a Single Script to Deploy the Application
 
-![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image4.png)
+1. **Create a Deployment Script**
 
+   - In the parent directory of your application, create a file named `deploy.sh` and add the following content:
+   
+     ```sh
+     set -e
+     S3_BUCKET="<your-bucket-name>"
+     sam build
+     sam package --output-template-file packaged.yaml --s3-bucket $S3_BUCKET --no-resolve-s3
+     sam deploy --template-file packaged.yaml --capabilities CAPABILITY_IAM --stack-name <your-stack-name>
+     ```
 
+   ![Deploy Script](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image6.png)
 
+2. **Make the Script Executable**
 
-1-e. Deploy the application with this command: 
+   - Make the script executable by running:
+   
+     ```sh
+     chmod +x deploy.sh
+     ```
 
-```
-sam deploy --template-file packaged.yaml --capabilities CAPABILITY_IAM --stack-name <your-stack-name>
-```
+   ![Make Executable](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image7.png)
 
+3. **Test the Deployment Script**
 
-![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image5.png)
+   - Execute the script to deploy the application:
+   
+     ```sh
+     ./deploy.sh
+     ```
 
+   ![Test Script](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image8.png)
 
+### Step 3: Update the Application
 
+1. **Modify the Timeout Setting**
 
+   - In the `template.yaml` file, set the `Timeout` value to 30.
 
+2. **Update `app.py`**
 
+   - Update `app.py` with new code from this Gist: [Gist Link](https://gist.github.com/mikerayco/18396083d1296145d4010a8359020085).
 
+   ![Modify Template](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image10.png)
 
+3. **Deploy the Changes**
 
+   - Deploy the updated application using:
+   
+     ```sh
+     ./deploy.sh
+     ```
 
+   ![Deploy Updates](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image11.png)
 
-## 2. Create a single script to deploy the application 
+4. **Enable X-Ray Tracing**
 
-2-a. To make the deployment faster create a bash script inside the parent directory of your application and name it deploy.sh
+   - In the AWS Lambda console, navigate to Monitoring and Operations tools, click edit, and enable active tracing.
 
+   ![Enable Tracing](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image12.png)
 
-Then paste this in the deploy.sh file, make sure to change the values for the S3_BUCKET and --stack-name
+### Step 4: Test the Application
 
+1. **Create a Test Event**
 
+   - In the Lambda console, create a new test event, name your event, and click create.
 
-```
-set -e
-S3_BUCKET="<your-bucket-name>"
-sam build
-sam package --output-template-file packaged.yaml --s3-bucket $S3_BUCKET --no-resolve-s3
-sam deploy --template-file packaged.yaml --capabilities CAPABILITY_IAM --stack-name <your-stack-name>
-```
+   ![Create Test Event](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image14.png)
+   ![Name Test Event](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image15.png)
 
+2. **Run the Test**
 
-![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image6.png)
+   - Click the test button three times to execute the function.
 
+   ![Run Test](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image16.png)
 
+3. **Resolve Python Dependency Error**
 
-2-b. To make the bash script executable, run the command:
+   - If you encounter an error stating "no module named ‘aws_xray_sdk’," add the module to `requirements.txt` in the `hello_world` directory, then redeploy the application using your deployment script.
 
-```
-chmod +x deploy.sh
-```
+4. **View X-Ray Traces**
 
-![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image7.png)
+   - Once the function is successfully invoked, navigate to Monitor > Traces in the Lambda console to view the function traces.
 
+   ![View Traces](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image20.png)
 
-2-c. Test the bash script by running: 
+---
 
-```
-./deploy.sh
-```
+## Clean-Up
 
-![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image8.png)
+After completing the lab, it's essential to clean up resources to avoid unnecessary costs. Create a `cleanup.sh` script and add the following code:
 
-
-
-## 3. Update the application
-
-3-a. Update the template.yaml file by setting the Timeout value to 30.
-
-3-b. Update the contents of the app.py with the code from this Gist file by going to the lambda function and pasting the code:
-
-https://gist.github.com/mikerayco/18396083d1296145d4010a8359020085
-
-3-b. Update the template.yaml file by setting the Timeout value to 30.
-
-
-![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image10.png)
-
-
-
-3-c. Deploy the changes by running using our bash script: 
-
-```
-./deploy.sh
-```
-
-![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image11.png)
-
-
-
-3-d. Once it’s deployed, navigate to the Lambda console on your web browser and go to Monitoring and Operations tools, click edit.
-
-
-![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image12.png)
-
-
-
-
-
-3-e. Enable active tracing and click save.
-
-![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image13.png)
-
-
-
-
-
-## 4 Test the application
-
-4-a. On the Lambda console, create a new test event.
-
-![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image14.png)
-
-
-And name your event, then click create.
-
-
-![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image15.png)
-
-
-
-
-
-4-b. Run the test by clicking the test button 3 times.
-
-![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image16.png)
-
-
-
-4-c. You will encounter an error that says: no module named ‘aws_xray_sdk’
-
-It means that the said library is not yet installed in our package, without SAM CLI, you need to install the library and repackage your app. Move to the next step to resolve the issue.
-
-![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image17.png)
-
-
-4-d. To install and include the aws_xray_sdk in our library just add it to the requirements.txt file on the codebase. (You may find the file under hello_world > requirements.txt)
-
-Save the requirements.txt file and redeploy the app using our bash deployment script.
-
-4-e. Once it’s deployed, the code might be hidden from the console due to a larger package size, to invoke it go to test and click invoke 3 times
-
-![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image19.png)
-
-
-4-e. Navigate to Monitor > Traces and you will see what happened to the functions that ran during our test.
-
-
-![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+5/Lab+23/image20.png)
-
-
-
-----------
-```
-## Clean-up
-
-After submitting, please run the following to delete everything. Make sure to replace the AWS_Region. s3 bucket name and stack name with your own.
-
-Create a cleanup.sh file and enter the following code:
-
-```
+```sh
 #!/bin/bash
 
 # Define AWS region
 AWS_REGION="ap-southeast-1"
 
-# Optionally, set the name of your S3 bucket and CloudFormation stack
+# Set the name of your S3 bucket and CloudFormation stack
 S3_BUCKET_NAME="your-s3-bucket-name"
 STACK_NAME="your-cloudformation-stack-name"
 
@@ -222,7 +173,7 @@ aws s3 rb s3://$S3_BUCKET_NAME --force --region $AWS_REGION
 echo "Deleting CloudFormation stack: $STACK_NAME"
 aws cloudformation delete-stack --stack-name $STACK_NAME --region $AWS_REGION
 
-# Step 3: Wait for the stack deletion to complete (if required)
+# Step 3: Wait for the stack deletion to complete
 echo "Waiting for stack deletion to complete..."
 aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region $AWS_REGION
 
@@ -231,15 +182,13 @@ echo "Listing remaining CloudFormation stacks..."
 aws cloudformation describe-stacks --region $AWS_REGION
 
 echo "Cleanup completed!"
-
 ```
 
+To execute the cleanup, run:
 
-Once done, run
-
-```
+```sh
 chmod +x cleanup.sh
 ./cleanup.sh
 ```
 
-**Thank you! Good job!**
+**Thank you for completing the lab! Great job!**
