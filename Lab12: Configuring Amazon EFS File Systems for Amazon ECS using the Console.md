@@ -303,4 +303,4 @@ aws ecs run-task --cluster <Cluster Name> --task-definition <Task Definition Nam
 ---
 
 ## **Conclusion**
-You have successfully configured **Amazon EFS with Amazon ECS** using the AWS Console! 🚀
+You have successfully configured Amazon EFS with Amazon ECS using the AWS Console, deploying on both EC2 and Fargate! 🚀
