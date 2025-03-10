@@ -102,52 +102,56 @@ sudo systemctl restart ecs
 
 ```json
 {
-    "family": "your-task-family",
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:010438472482:task-definition/efs-charles:4",
     "containerDefinitions": [
         {
             "name": "nginx",
             "image": "public.ecr.aws/docker/library/nginx:latest",
             "cpu": 0,
-            "portMappings": [],
+            "memory": 128,
+            "portMappings": [
+                {
+                    "containerPort": 80,
+                    "hostPort": 80,
+                    "protocol": "tcp"
+                }
+            ],
             "essential": true,
             "environment": [],
             "mountPoints": [
                 {
-                    "sourceVolume": "efs-volume",
-                    "containerPath": "/mnt/efs"
+                    "sourceVolume": "efs-html",
+                    "containerPath": "/usr/share/nginx/html"
                 }
             ],
             "volumesFrom": [],
-            "logConfiguration": {
-                "logDriver": "awslogs",
-                "options": {
-                    "awslogs-group": "/ecs/carlo-task",
-                    "awslogs-region": "us-east-1",
-                    "awslogs-stream-prefix": "ecs"
-                }
-            },
             "systemControls": []
         }
     ],
-    "taskRoleArn": "arn:aws:iam::010438472482:role/ecsTaskExecutionRole",
+    "family": "efs-charles",
     "executionRoleArn": "arn:aws:iam::010438472482:role/ecsTaskExecutionRole",
-    "networkMode": "bridge",
+    "revision": 4,
     "volumes": [
         {
-            "name": "efs-volume",
+            "name": "efs-html",
             "host": {
                 "sourcePath": "/mnt/efs"
             }
         }
     ],
+    "status": "ACTIVE",
     "placementConstraints": [],
+    "compatibilities": [
+        "EXTERNAL",
+        "EC2"
+    ],
     "requiresCompatibilities": [
         "EC2"
     ],
-    "cpu": "256",
-    "memory": "512"
+    "registeredAt": "2025-03-09T03:49:34.975Z",
+    "registeredBy": "arn:aws:iam::010438472482:user/apper.charles",
+    "tags": []
 }
-
 ```
 5. Click **Create**.
 
