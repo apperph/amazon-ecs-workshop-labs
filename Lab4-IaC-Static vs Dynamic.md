@@ -44,7 +44,7 @@ This lab activity will demonstrate how to create a CloudFormation stack using th
 
 ### Step 2: Create Another Stack with the Same Template
 
-4. **Attempt to Reuse Template**
+1. **Attempt to Reuse Template**
 
    - Try creating a new stack with the same template:
 
@@ -64,7 +64,7 @@ This lab activity will demonstrate how to create a CloudFormation stack using th
 
 ### Step 3: Use a Dynamic CloudFormation Template
 
-5. **Create and Edit Dynamic Template File**
+1. **Create and Edit Dynamic Template File**
 
    - Create a file named `dynamic-cf.yml` and paste the template from the following URL:
 
@@ -76,7 +76,7 @@ This lab activity will demonstrate how to create a CloudFormation stack using th
 
    ![Dynamic Template](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+1/Lab+2/image6.png)
 
-6. **Create Dynamic Stack**
+2. **Create Dynamic Stack**
 
    - Run this command to create a stack:
 
@@ -86,13 +86,13 @@ This lab activity will demonstrate how to create a CloudFormation stack using th
 
    ![Dynamic Stack Created](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+1/Lab+2/image7.png)
 
-7. **Verify Dynamic Stack**
+3. **Verify Dynamic Stack**
 
    - Check the CloudFormation console to confirm the stack creation.
 
    ![Verify Stack](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+1/Lab+2/image8.png)
 
-8. **Create Another Dynamic Stack**
+4. **Create Another Dynamic Stack**
 
    - Run the following command with dynamic parameters:
 
@@ -109,7 +109,7 @@ This lab activity will demonstrate how to create a CloudFormation stack using th
 
    ![Another Stack Created](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/CDMP/Session+1/Lab+2/image9.png)
 
-9. **Verify New Dynamic Stack**
+5. **Verify New Dynamic Stack**
 
    - Go back to the CloudFormation console and verify the newly created stack.
 
