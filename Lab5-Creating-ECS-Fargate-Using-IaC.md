@@ -1,35 +1,32 @@
 # Lab 5: Deploying an ECS Fargate Service with CloudFormation
 
-## Objective
+## Overview
 
-This lab will guide you through deploying an ECS service running Nginx on AWS Fargate using a CloudFormation template.
+This lab guides you through deploying an ECS service running Nginx on AWS Fargate using a CloudFormation template.
 
-## Prerequisites
+## 1. Prerequisites
 
-- An AWS account
-- AWS CLI installed and configured
-- CloudFormation permissions
-- An existing VPC and subnet
+**1-a. Install Required Tools**
 
-## Steps
+- AWS CLI: Installed and configured.
+- AWS Account: IAM permissions to create CloudFormation stacks.
+- An existing VPC and subnet.
 
-### Step 1: Set Up AWS CLI
+## 2. Configure AWS CLI
 
-1. **Configure AWS CLI**
+**2-a. Setup AWS CLI**
 
-   Ensure your AWS CLI is configured properly by running:
-
+- Ensure your AWS CLI is configured properly by running:
    ```sh
    aws configure
    ```
+- Provide your AWS Access Key, Secret Key, default region, and output format.
 
-   - Provide your AWS Access Key, Secret Key, default region, and output format.
+## 3. Create CloudFormation Template
 
-### Step 2: Save the CloudFormation Template
+**3-a. Save the CloudFormation Template**
 
-1. **Create the CloudFormation Template**
-
-   Save the following CloudFormation YAML template as `ecs-fargate.yaml`:
+- Save the following YAML template as ecs-fargate.yaml:
 
    ```yaml
    Parameters:
@@ -94,11 +91,11 @@ This lab will guide you through deploying an ECS service running Nginx on AWS Fa
              AssignPublicIp: ENABLED
    ```
 
-### Step 3: Deploy the CloudFormation Stack
+## 4. Deploy the CloudFormation Stack
 
-1. **Create the CloudFormation Stack**
+**4-a. Create the CloudFormation Stack**
 
-   Run the following command, replacing `<VPC_ID>` and `<SUBNET_ID>` with your values:
+- Run the following command, replacing ```<VPC_ID>``` and ```<SUBNET_ID>``` with your values:
 
    ```sh
    aws cloudformation create-stack \
@@ -109,76 +106,69 @@ This lab will guide you through deploying an ECS service running Nginx on AWS Fa
      --capabilities CAPABILITY_NAMED_IAM
    ```
 
-### Step 4: Monitor Deployment
+## 5. Monitor Deployment
 
-1. **Check Stack Creation Progress**
+**5-a. Check Stack Creation Progress**
 
-   Use the following command to check the stack creation progress:
+- Use the following command to check the stack creation progress:
+  
+```sh
+aws cloudformation describe-stacks --stack-name ecs-fargate-lab
+```
 
-   ```sh
-   aws cloudformation describe-stacks --stack-name ecs-fargate-lab
-   ```
+- Wait until the status changes to ```CREATE_COMPLETE```.
+  
+## 6. Validate ECS Service
 
-2. **Wait for Completion**
+**6-a. List Running ECS Services**
 
-   - Wait until the status changes to `CREATE_COMPLETE`.
+- Check the list of running ECS services with:
+  
+```sh
+aws ecs list-services --cluster MyECSCluster
+```
 
-### Step 5: Validate ECS Service
+**6-b. Describe the Service**
 
-1. **List Running ECS Services**
+- Describe the newly created ECS service using:
+  
+```sh
+aws ecs describe-services --cluster MyECSCluster --services MyECSService
+```
 
-   Check the list of running ECS services with:
+## 7. Test the Nginx Deployment
 
-   ```sh
-   aws ecs list-services --cluster MyECSCluster
-   ```
+**7-a. Retrieve Public IP**
 
-2. **Describe the Service**
+- Retrieve the public IP of the running task:
+```sh
+aws ecs list-tasks --cluster MyECSCluster
+```
+```sh
+aws ecs describe-tasks --cluster MyECSCluster --tasks <TASK_ID>
+```
 
-   Describe the newly created ECS service using:
+**7-b. Verify Nginx Welcome Page**
 
-   ```sh
-   aws ecs describe-services --cluster MyECSCluster --services MyECSService
-   ```
+- Open the public IP in a browser to verify the Nginx welcome page.
 
-### Step 6: Test the Nginx Deployment
+## 8. Cleanup
 
-1. **Retrieve Public IP**
+**8-a. Delete the Deployed Resources**
 
-   Retrieve the public IP of the running task:
+- To delete the deployed resources, run:
 
-   ```sh
-   aws ecs list-tasks --cluster MyECSCluster
-   ```
+```sh
+aws cloudformation delete-stack --stack-name ecs-fargate-lab
+```
 
-   ```sh
-   aws ecs describe-tasks --cluster MyECSCluster --tasks <TASK_ID>
-   ```
+**8-b. Confirm Deletion**
 
-2. **Verify Nginx Welcome Page**
+- Confirm that the stack has been deleted with:
 
-   - Open the public IP in a browser to verify the Nginx welcome page.
+```sh
+aws cloudformation describe-stacks --stack-name ecs-fargate-lab
+```
+__________________________________________________________________________
 
-### Step 7: Cleanup Resources
-
-1. **Delete the Deployed Resources**
-
-    To delete the deployed resources, run:
-
-    ```sh
-    aws cloudformation delete-stack --stack-name ecs-fargate-lab
-    ```
-
-2. **Confirm Deletion**
-
-    Confirm that the stack has been deleted with:
-
-    ```sh
-    aws cloudformation describe-stacks --stack-name ecs-fargate-lab
-    ```
-
----
-
-## Conclusion
-
-Follow these steps to successfully deploy and validate an ECS Fargate service with Nginx using AWS CloudFormation, and ensure cleanup of resources post-deployment.
+This concludes the lab exercise. If you have any questions or need further assistance, please consult AWS documentation or reach out to your administrator.
