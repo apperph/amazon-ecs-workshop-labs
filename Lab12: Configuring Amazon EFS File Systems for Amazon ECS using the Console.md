@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/cd40fe79-8f9d-4234-8a3d-c5d28f1abc1a)# Lab 13: Configuring Amazon EFS File Systems for Amazon ECS using the Console
+## Lab 13: Configuring Amazon EFS File Systems for Amazon ECS using the Console
 
 https://docs.aws.amazon.com/AmazonECS/latest/developerguide/tutorial-efs-volumes.html
 
@@ -93,8 +93,10 @@ systemctl status ecs
    - **Use case:** `Elastic Container Service Task`
    - Click **Next**.
 5. **Attach Permissions Policies:**
+
 ![Screenshot 2025-03-10 202015](https://github.com/user-attachments/assets/2aae769b-c94b-406d-b9c3-affe251f8171)
-6. **Create Inline Policy**
+
+7. **Create Inline Policy**
 ```json
 {
     "Version": "2012-10-17",
