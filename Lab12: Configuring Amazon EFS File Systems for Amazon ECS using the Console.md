@@ -1,4 +1,4 @@
-# Lab 13: Configuring Amazon EFS File Systems for Amazon ECS using the Console
+![image](https://github.com/user-attachments/assets/cd40fe79-8f9d-4234-8a3d-c5d28f1abc1a)# Lab 13: Configuring Amazon EFS File Systems for Amazon ECS using the Console
 
 https://docs.aws.amazon.com/AmazonECS/latest/developerguide/tutorial-efs-volumes.html
 
@@ -11,8 +11,10 @@ This lab will guide you through configuring an Amazon Elastic File System (EFS) 
 1. Open the [Amazon EFS console](https://console.aws.amazon.com/efs/).
 2. Click **Create file system**.
 3. Configure the following:
-   - **Name**: `EFS-tutorial`
+   - **Name**: `EFS-demo`
    - **Virtual Private Cloud (VPC)**: Select the VPC where your ECS cluster resides.
+   - **Throughput Mode**: Bursting
+   - **Security Group**: Choose the security group you created for the EFS for both subnets.
 4. Click **Create**.
 5. Note down the **File System ID** (e.g., `fs-xxxxxxxx`).
 
@@ -24,11 +26,12 @@ This lab will guide you through configuring an Amazon Elastic File System (EFS) 
 3. Click **Create Cluster**.
 4. Select **EC2 Linux + Networking** and click **Next step**.
 5. Configure the cluster:
-   - **Cluster name**: `EFS-tutorial`
+   - **Cluster name**: `EFS-demo`
    - **Provisioning Model**: On-Demand.
-   - **EC2 instance type**: `t2.micro` (or any appropriate type).
+   - **EC2 instance type**: `t2.small` (or any appropriate type).
    - **Number of instances**: `1`.
    - **Key pair**: Choose an existing key pair or create a new one.
+   - **Security Group**: Choose the security group you created for the ECS.
 6. Click **Create**.
 7. Once created, verify that your cluster is listed in the **Clusters** section.
 
@@ -51,23 +54,26 @@ This lab will guide you through configuring an Amazon Elastic File System (EFS) 
 7. Click **Launch** and select a key pair.
 8. Verify that the instance is running in **EC2 Instances**.
 
-9. Connect to the instance and run:
+9. SSH to the instance and run:
 
 ```
+#SSH
+ssh -i charles-kp.pem ec2-user@<Public Address>
+
 #Installing docker:
 sudo yum update -y
 sudo yum install -y docker
 sudo systemctl start docker
 sudo systemctl enable docker
 
-#Installing ecs agent
+#Install and Start the ECS Agent
+sudo yum update -y
+sudo amazon-linux-extras enable ecs
 sudo yum install -y ecs-init
-sudo systemctl start ecs
-sudo systemctl enable ecs
-
-#configure ecs
-echo "ECS_CLUSTER=your-cluster-name" | sudo tee -a /etc/ecs/ecs.config
+sudo systemctl enable --now ecs
+echo "ECS_CLUSTER=<Your ECS Cluster Name>" | sudo tee -a /etc/ecs/ecs.config
 sudo systemctl restart ecs
+systemctl status ecs
 
 ```
 
@@ -87,10 +93,36 @@ sudo systemctl restart ecs
    - **Use case:** `Elastic Container Service Task`
    - Click **Next**.
 5. **Attach Permissions Policies:**
-   - `AmazonECSTaskExecutionRolePolicy`
-   - `AmazonElasticFileSystemFullAccess`
-6. **Role Name:** `ecsTaskExecutionRole`.
-7. Click **Create Role**.
+![Screenshot 2025-03-10 202015](https://github.com/user-attachments/assets/2aae769b-c94b-406d-b9c3-affe251f8171)
+6. **Create Inline Policy**
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "iam:*",
+                "logs:CreateLogStream",
+                "iam:PassRole",
+                "s3:*",
+                "kms:*",
+                "ecs:*",
+                "cloudformation:*",
+                "ecr:*",
+                "ec2:*",
+                "logs:CreateLogGroup",
+                "logs:PutLogEvents",
+                "ssm:GetParameters"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
+7. **Role Name:** `ecsTaskExecutionRole`.
+8. Click **Create Role**.
 
 ---
 
@@ -98,11 +130,12 @@ sudo systemctl restart ecs
 1. Open the [Amazon ECS console](https://console.aws.amazon.com/ecs/).
 2. Navigate to **Task definitions**.
 3. Click **Create new task definition** → **Create new task definition with JSON**.
-4. Paste the following JSON, replacing `fs-xxxxxxxx` with your EFS File System ID:
+4. Paste the following JSON, replacing `fs-xxxxxxxx` with your EFS File System ID and `arn:aws:iam::<Account ID>:user/<IAM User>` with your Account ID and IAM User:
 
 ```json
 {
-    "taskDefinitionArn": "arn:aws:ecs:us-east-1:010438472482:task-definition/efs-charles:4",
+    "family": "efs-charles",
+    "executionRoleArn": "arn:aws:iam::010438472482:role/ecsTaskExecutionRole",
     "containerDefinitions": [
         {
             "name": "nginx",
@@ -128,9 +161,6 @@ sudo systemctl restart ecs
             "systemControls": []
         }
     ],
-    "family": "efs-charles",
-    "executionRoleArn": "arn:aws:iam::010438472482:role/ecsTaskExecutionRole",
-    "revision": 4,
     "volumes": [
         {
             "name": "efs-html",
@@ -139,25 +169,17 @@ sudo systemctl restart ecs
             }
         }
     ],
-    "status": "ACTIVE",
     "placementConstraints": [],
-    "compatibilities": [
-        "EXTERNAL",
-        "EC2"
-    ],
     "requiresCompatibilities": [
         "EC2"
-    ],
-    "registeredAt": "2025-03-09T03:49:34.975Z",
-    "registeredBy": "arn:aws:iam::010438472482:user/apper.charles",
-    "tags": []
+    ]
 }
 ```
 5. Click **Create**.
 
 ---
 
-## **Step 6: Create and Deploy an ECS Service**
+## **Step 6: Create and Deploy an ECS Service via Console**
 1. Open **Amazon ECS console** → **Clusters** → `EFS-tutorial`.
 2. Navigate to **Services** → Click **Create**.
 3. Configure:
@@ -168,6 +190,12 @@ sudo systemctl restart ecs
 4. Click **Create Service**.
 5. Monitor the service to ensure tasks are running.
 
+## **via Terminal**
+1. Open Terminal
+```
+aws ecs run-task --cluster <Cluster Name> --task-definition <Task Definition Name> --launch-type EC2
+```
+![image](https://github.com/user-attachments/assets/51feba16-fb70-4154-9dfd-93fbe6c7e736)
 ---
 
 ## **Step 7: Verify the Deployment**
