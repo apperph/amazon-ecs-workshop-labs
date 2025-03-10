@@ -1,104 +1,112 @@
-## **Synthetic Monitoring**
+# Lab 8: Synthetic Monitoring 
 
-Synthetic monitoring is a proactive approach to monitoring the performance, availability, and functionality of applications or systems. Unlike real-user monitoring, which relies on live user interactions, synthetic monitoring uses scripted tests or "synthetic transactions" that simulate user behavior to continuously check the health of your applications, APIs, or websites.
+## Objective
 
-In Amazon CloudWatch, synthetic monitoring is implemented using canaries. Canaries are scripts that mimic user interactions with your system. AWS CloudWatch Synthetics allows you to:
+This lab demonstrates how to deploy a synthetic monitoring solution to monitor the performance, availability, and functionality of applications using Amazon CloudWatch. You'll deploy a canary to simulate user behavior and check an application’s health.
 
+## Introduction to Synthetic Monitoring
+
+Synthetic monitoring is a proactive approach that uses scripted tests, or "synthetic transactions," to simulate user interactions and continuously verify the performance and functionality of applications, APIs, or websites. In Amazon CloudWatch, synthetic monitoring is performed using canaries — scripts that mimic user actions.
+
+AWS CloudWatch Synthetics allows you to:
 - Test APIs and web applications for availability, latency, and functionality.
-- Detect broken links, unexpected content changes, and more.
+- Detect broken links, unexpected content changes, etc.
 - Store monitoring results in Amazon S3 for analysis and integrate with CloudWatch Alarms for proactive alerts.
 
-----------
+---
 
-## 0. Deploy a vulnerable demo website from OWASP
+## Step 0: Deploy a Vulnerable Demo Website from OWASP
 
-0-a. Click on Cloudformation
+1. **Access CloudFormation**
+   - Open AWS CloudFormation from the AWS Management Console.
 
-0-b. Deploy the ECS Cluster containing OWASP Juice Shop
+2. **Deploy the ECS Cluster**
+   - Deploy the ECS Cluster containing OWASP Juice Shop.
+   - You can find the template here: [OWASP Juice Shop in ECS](https://github.com/olyvenbayani/JuiceShop-in-ECS).
 
-0-c. You can find the template here:
+3. **Access the Application**
+   - Once deployed, try accessing the app using the following URL:
+     ```
+     http://<Your-ECS-IPV4>:3000
+     ```
 
-https://github.com/olyvenbayani/JuiceShop-in-ECS
+## Step 1: Set Up CloudWatch Synthetic Monitoring
 
-0-d. Once done try accessing the app:
+1. **Access CloudWatch**
+   - Open AWS Management Console and enter CloudWatch in the search bar.
 
-```
-http://<Your-ECS-IPV4>:3000
-```
+2. **Navigate to Synthetics**
+   - In the CloudWatch Console, under **Application Signals**, click on **Synthetic Canaries**.
+   
+![Synthetic Canaries](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/FECP/FECP4-1021/fecp-1021-lab2/img1021b-01.png)
 
-## 1. Setting up the CloudWatch Synthetic
+3. **Create a Canary**
+   - In the Canaries section, click on **Create Canary**.
+   
+![Create Canary](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/FECP/FECP4-1021/fecp-1021-lab2/img1021b-02.png)
 
+4. **Configure Canary**
+   - Under **Blueprint**, select **Heartbeat** and give it a name.
+   - Alternatively, upload a custom Node.js-based script for advanced scenarios.
+   - For **Application or Endpoint URL**, enter:
+     ```
+     http://<Your-ECS-Public-IP>:3000
+     ```
+   - Note: This website runs the OWASP Juice Shop, as provisioned earlier.
 
-1-a. Access the AWS Management Console and enter CloudWatch on the search bar.
+![Blueprint Configuration](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/FECP/FECP4-1021/fecp-1021-lab2/img1021b-03.png)
 
+5. **Set Schedule**
+   - Under the **Schedule** tab, choose a **Frequency** (e.g., every 5 minutes). Use a Cron Expression for granular scheduling if required.
+   
+![Scheduling](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/FECP/FECP4-1021/fecp-1021-lab2/img1021b-04.png)
 
-1-b. Once inside CloudWatch Console, under **Applications Signals** click on **Synthetic Canaries**
+6. **Set Retention Period**
+   - Under **Retention Period**, choose **Custom** and set it to 1 day for lab purposes. Adjust as per company standards if needed.
 
-![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/FECP/FECP4-1021/fecp-1021-lab2/img1021b-01.png)
+7. **Select S3 Bucket**
+   - Choose the default S3 bucket created for you or specify a different existing S3 bucket for logs.
 
-1-c. On the Canaries Section, click on **Create Canary**
+![S3 Bucket Selection](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/FECP/FECP4-1021/fecp-1021-lab2/img1021b-06.png)
 
-Canaries are the scripts used for monitoring. This section lets you create, manage, and view canaries and their results.
-\
-![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/FECP/FECP4-1021/fecp-1021-lab2/img1021b-02.png)
+8. **Set Access Permissions**
+   - Choose to create a new role for the service under **Access Permission**.
 
-1-d. Under blueprint select **Heartbeat** and give it a name. Alternatively, Upload a Custom Script: Provide your own Node.js-based script for advanced scenarios.
+![Access Permission](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/FECP/FECP4-1021/fecp-1021-lab2/img1021b-07.png)
 
-Under application or endpoint URL, enter the URL:
-http://<Your ECS Public IP>:3000
+9. **Configure CloudWatch Alarms**
+   - You can set a new alarm and connect it to an SNS topic. For this lab, omit this step as SNS is not configured.
 
-This website runs the owasp juice shop same as what we provisioned last time.
+![Alarms Configuration](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/FECP/FECP4-1021/fecp-1021-lab2/img1021b-08.png)
 
-![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/FECP/FECP4-1021/fecp-1021-lab2/img1021b-03.png)
+10. **Finish Creating the Canary**
 
-1-e. Under **Schedule** tab,  choose a **Frequency**: Define how often the canary will run (e.g., every 5, 15, or 60 minutes). Alternatively you can use a Cron Expression for more granular scheduling if required.
+![Finish Canary Creation](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/FECP/FECP4-1021/fecp-1021-lab2/img1021b-09.png)
 
-For this activity choose 5 minutes.
+---
 
-![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/FECP/FECP4-1021/fecp-1021-lab2/img1021b-04.png)
- 
-1-f. Under retention period, choose **Custom** and put 1 day. Note that this is because it is just a lab. If you need to retain your logs, make sure to comply with your company's standards.
+## Step 2: Check the Results
 
-1-g. Choose the default S3 bucket created for you which is entered automatically or choose a different s3 bucket intended for your logs if you have any.
+1. **Monitor Canary Execution**
+   - Once the Canary is running, monitor the success/failure status on the dashboard.
 
-![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/FECP/FECP4-1021/fecp-1021-lab2/img1021b-06.png)
+![Canary Status](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/FECP/FECP4-1021/fecp-1021-lab2/img1021b-10.png)
 
-1-h. Choose to create a new role for the service under **Access Permission.**
+2. **View Canary Results**
+   - Click on the Canary you created to view detailed results.
 
-![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/FECP/FECP4-1021/fecp-1021-lab2/img1021b-07.png)
+3. **Download Artifacts**
+   - Under **Canary Artifacts and S3 Location**, click on **Download Artifacts**. Once downloaded, you will see several files including logs and HAR files.
 
-1-i. Under cloudwatch alarm, you can set a new alarm and connect it to an SNS topic you created. But for this lab, we don't have any so leave it. 
+![Download Artifacts](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/FECP/FECP4-1021/fecp-1021-lab2/img1021b-11.png)
 
-![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/FECP/FECP4-1021/fecp-1021-lab2/img1021b-08.png)
+4. **Examine HAR Files**
+   - HAR (HTTP Archive) files help in troubleshooting by tracking web transactions. They are primarily used for identifying performance issues, such as bottlenecks and slow load times.
 
-1-j. Finish creating the Canary.
+![HAR Files](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/FECP/FECP4-1021/fecp-1021-lab2/img1021b-12.png)
 
-![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/FECP/FECP4-1021/fecp-1021-lab2/img1021b-09.png)
+---
 
+## Conclusion
 
-----------
-
-
-
-## Checking the results
-
-2-a. Once the Canary is running you should see success/failure status on the dashboard.
-
-![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/FECP/FECP4-1021/fecp-1021-lab2/img1021b-10.png)
-
-2-b. Click on the Canary you created.
-
-2-c. Under Canary Artifacts and S3 Location, click on Download Artiffacts. Once downloaded you will see 4 files inside.
-
-![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/FECP/FECP4-1021/fecp-1021-lab2/img1021b-11.png)
-
-2-d. You can view each file on the artifact such as the log files and the HAR files.
-
-HAR, short for HTTP Archive, is a format used for tracking information between a web browser and a website. A HAR file is primarily used for identifying performance issues, such as bottlenecks and slow load times, and page rendering problems.
-
-![](https://sb-next-prod-image-bucket.s3.ap-southeast-1.amazonaws.com/public/FECP/FECP4-1021/fecp-1021-lab2/img1021b-12.png)
-
-----------
-
-Congratulations on completing your first synthetic monitoring! 
-
+Congratulations on completing the lab on synthetic monitoring! You have successfully created a canary in Amazon CloudWatch to monitor your application, analyze results, and understand its health proactively. Remember to adhere to best practices for retention and permissions in a production environment.
