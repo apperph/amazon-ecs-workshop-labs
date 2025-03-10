@@ -94,7 +94,7 @@ systemctl status ecs
 
 ```
 
-## 4: Confirm EC2 Instance is Registered with ECS**
+## 4: Confirm EC2 Instance is Registered with ECS
 
 4-a. Open the [ECS console](https://console.aws.amazon.com/ecs/).
 
@@ -106,7 +106,7 @@ systemctl status ecs
 
 ---
 
-## 5: Create an IAM Role for ECS Task Execution**
+## 5: Create an IAM Role for ECS Task Execution
 
 5-a. Open the [IAM console](https://console.aws.amazon.com/iam/).
 
@@ -313,7 +313,7 @@ aws ecs run-task --cluster <Cluster Name> --task-definition <Task Definition Nam
 
 ![image](https://github.com/user-attachments/assets/4d44a337-77ba-479f-9ca9-e6ed2d9546f6)
 
-## 8: Verify the Deployment**
+## 8: Verify the Deployment
 
 8-a. Open **Amazon ECS console** → **Clusters** → `EFS-tutorial`.
 
