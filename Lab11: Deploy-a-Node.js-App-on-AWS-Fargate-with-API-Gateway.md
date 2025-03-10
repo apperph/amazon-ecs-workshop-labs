@@ -5,17 +5,19 @@ In this lab, we will deploy a Node.js application on AWS Fargate using Docker, E
 
 ## 1. Prerequisites
 
-** 1-a. Install Required Tools
+**1-a. Install Required Tools**
 
-1. **Install Required Tools**
+- AWS CLI v2
+   - Download and install AWS CLI v2 from the official AWS website.
+   - Verify installation: aws --version
+- Docker Desktop for Windows
+   - Download and install Docker Desktop for Windows.
+   - Verify installation: docker --version
+   - Ensure Docker Desktop is running Linux containers.
+- Node.js
+   - Download and install Node.js from the official Node.js website.
+   - Verify installation: node -v
 
-   a. **AWS CLI v2**
-
-   - Download and install the AWS CLI v2 from the [official AWS website](https://aws.amazon.com/cli/).
-   - Verify installation:
-     ```sh
-     aws --version
-     ```
 
    b. **Docker Desktop for Windows**
 
