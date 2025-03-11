@@ -6,7 +6,7 @@ This lab guides you through deploying an ECS service running Nginx on AWS Fargat
 
 ## 1. Prerequisites
 
-**1-a. Install Required Tools**
+**1. Install Required Tools**
 
 - AWS CLI: Installed and configured.
 - AWS Account: IAM permissions to create CloudFormation stacks.
@@ -14,17 +14,16 @@ This lab guides you through deploying an ECS service running Nginx on AWS Fargat
 
 ## 2. Configure AWS CLI
 
-**2-a. Setup AWS CLI**
+**1. Setup AWS CLI**
 
 - Ensure your AWS CLI is configured properly by running:
    ```sh
    aws configure
    ```
-- Provide your AWS Access Key, Secret Key, default region, and output format.
 
 ## 3. Create CloudFormation Template
 
-**3-a. Save the CloudFormation Template**
+1. Save the CloudFormation Template**
 
 - Save the following YAML template as ecs-fargate.yaml:
 
@@ -93,7 +92,7 @@ This lab guides you through deploying an ECS service running Nginx on AWS Fargat
 
 ## 4. Deploy the CloudFormation Stack
 
-**4-a. Create the CloudFormation Stack**
+1. Create the CloudFormation Stack**
 
 - Run the following command, replacing ```<VPC_ID>``` and ```<SUBNET_ID>``` with your values:
 
@@ -108,7 +107,7 @@ This lab guides you through deploying an ECS service running Nginx on AWS Fargat
 
 ## 5. Monitor Deployment
 
-**5-a. Check Stack Creation Progress**
+1. Check Stack Creation Progress**
 
 - Use the following command to check the stack creation progress:
   
@@ -120,7 +119,7 @@ aws cloudformation describe-stacks --stack-name ecs-fargate-lab
   
 ## 6. Validate ECS Service
 
-**6-a. List Running ECS Services**
+1. List Running ECS Services**
 
 - Check the list of running ECS services with:
   
@@ -128,7 +127,7 @@ aws cloudformation describe-stacks --stack-name ecs-fargate-lab
 aws ecs list-services --cluster MyECSCluster
 ```
 
-**6-b. Describe the Service**
+2. Describe the Service**
 
 - Describe the newly created ECS service using:
   
@@ -138,7 +137,7 @@ aws ecs describe-services --cluster MyECSCluster --services MyECSService
 
 ## 7. Test the Nginx Deployment
 
-**7-a. Retrieve Public IP**
+1. Retrieve Public IP**
 
 - Retrieve the public IP of the running task:
 ```sh
@@ -148,13 +147,13 @@ aws ecs list-tasks --cluster MyECSCluster
 aws ecs describe-tasks --cluster MyECSCluster --tasks <TASK_ID>
 ```
 
-**7-b. Verify Nginx Welcome Page**
+2. Verify Nginx Welcome Page**
 
 - Open the public IP in a browser to verify the Nginx welcome page.
 
 ## 8. Cleanup
 
-**8-a. Delete the Deployed Resources**
+1. Delete the Deployed Resources**
 
 - To delete the deployed resources, run:
 
@@ -162,7 +161,7 @@ aws ecs describe-tasks --cluster MyECSCluster --tasks <TASK_ID>
 aws cloudformation delete-stack --stack-name ecs-fargate-lab
 ```
 
-**8-b. Confirm Deletion**
+2. Confirm Deletion**
 
 - Confirm that the stack has been deleted with:
 
