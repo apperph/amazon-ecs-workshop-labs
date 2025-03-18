@@ -1,4 +1,4 @@
-# Lab 5: Deploying an ECS Fargate Service with CloudFormation
+# Lab 5: Creating Amazon ECS Fargate Service with CloudFormation
 
 ## Overview
 
