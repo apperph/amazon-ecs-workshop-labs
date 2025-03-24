@@ -117,6 +117,16 @@ This lab activity will demonstrate how to create a CloudFormation stack using th
 
 ---
 
+## Challenge:
+
+
+**Secure the EC2 Instance**
+
+- Modify your dynamic CloudFormation template to include a security group for the EC2 instance.
+- Configure the security group to allow port 80 and 443 in inbound traffic
+- Update your EC2 instance in the dynamic template to use this security group.
+
+
 ## Conclusion
 
 Well done! Please make sure to delete the stacks before ending this lab activity.
