@@ -68,7 +68,7 @@ This lab activity will demonstrate how to create a CloudFormation stack using th
 
    - Create a file named `dynamic-cf.yml` and paste the template from the following URL:
 
-     - [Dynamic Template URL](https://github.com/olyvenbayani/labs-IaC-Lab01/blob/5e3ebe575cea10b5f65e457b120202d87e5c02c8/dynamic-template.yml)
+     - [Dynamic Template URL](./source files/dynamic-template.yml)
 
    ```bash
    nano dynamic-cf.yml
