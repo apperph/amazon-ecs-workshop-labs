@@ -16,7 +16,7 @@ This lab activity will demonstrate how to create a CloudFormation stack using th
 
    - Create a file named `static-cf.yml` and copy the template from the following URL:
 
-     - [Static Template URL](https://github.com/olyvenbayani/labs-IaC-Lab01.git)
+     - [Static Template URL]([https://github.com/olyvenbayani/labs-IaC-Lab01.git](https://github.com/apperph/amazon-ecs-workshop-labs/blob/main/source%20files/static-template.yml))
 
    ```bash
    nano static-cf.yml
@@ -68,7 +68,7 @@ This lab activity will demonstrate how to create a CloudFormation stack using th
 
    - Create a file named `dynamic-cf.yml` and paste the template from the following URL:
 
-     - [Dynamic Template URL](./source_files/dynamic-template.yml)
+     - [Dynamic Template URL]([./source_files/dynamic-template.yml](https://github.com/apperph/amazon-ecs-workshop-labs/blob/main/source%20files/dynamic-template.yml))
 
    ```bash
    nano dynamic-cf.yml
