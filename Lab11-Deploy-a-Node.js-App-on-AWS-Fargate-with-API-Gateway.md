@@ -1,4 +1,4 @@
-# Lab 9: Deploy a Node.js App on AWS Fargate with API Gateway
+# Lab 11: Deploy a Node.js App on AWS Fargate with API Gateway
 
 ## Objective:
 In this lab, we will deploy a Node.js application on AWS Fargate using Docker, ECS, ECR, and API Gateway. This lab is intended for users authenticating via IAM User and working from a local Windows machine.
