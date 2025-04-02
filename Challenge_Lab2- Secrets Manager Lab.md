@@ -61,7 +61,7 @@ client = boto3.client(
 )
 
 # Specify the secret name and retrieve its value
-secret_name = "my-first-secret"
+secret_name = "my-first-secret" #Replace with your Secret ARN
 response = client.get_secret_value(SecretId=secret_name)
 secret = response['SecretString']
 
