@@ -72,8 +72,9 @@ In this lab, we will deploy a Node.js application on AWS Fargate using Docker, E
      });
 
      app.listen(port, () => {
-     Server running on port ${port}`);
-     });
+    console.log(`Server running on port ${port}`);
+    });
+
      ```
 
    3. **Test Locally**
