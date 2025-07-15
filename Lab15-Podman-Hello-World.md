@@ -182,17 +182,12 @@ Register the task definition:
 aws ecs register-task-definition --cli-input-json file://task-definition.json
 ```
 
-Run the Task: Ensure you have a valid subnet and security group, then run:
+Run the task using the `default-vpc`'s public subnets:
 
 ```bash
-aws ecs run-task --cluster $ECS_CLUSTER --launch-type FARGATE --network-configuration "awsvpcConfiguration={subnets=[<your-subnet-id>],securityGroups=[<your-security-group-id>],assignPublicIp=ENABLED}" --task-definition hello-world-task-<yourname>
+aws ecs run-task --cluster $ECS_CLUSTER --launch-type FARGATE --network-configuration "awsvpcConfiguration={subnets=[subnet-0cbe1c7665d5ce774,subnet-0698c1a9bf1fbd843],securityGroups=[sg-0f337d85f089a9cb0],assignPublicIp=ENABLED}" --task-definition hello-world-task-<yourname>
 ```
-
-Example:
-
-```bash
-aws ecs run-task --cluster $ECS_CLUSTER --launch-type FARGATE --network-configuration "awsvpcConfiguration={subnets=[subnet-0ac39594c83295aa3],securityGroups=[sg-0f337d85f089a9cb0],assignPublicIp=ENABLED}" --task-definition hello-world-task-<yourname>
-```
+> This uses the default VPC’s public subnets (`subnet-0cbe1c7665d5ce774` and `subnet-0698c1a9bf1fbd843`) and the provided security group (`sg-0f337d85f089a9cb0`). Replace `<yourname>` with your unique identifier.
 
 ### Verification
 
