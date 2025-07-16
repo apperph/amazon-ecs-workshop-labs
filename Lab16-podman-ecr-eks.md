@@ -144,7 +144,7 @@ echo $EKS_CLUSTER
 Update your `kubectl` configuration to access the EKS cluster:
 
 ```bash
-aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER
+aws eks update-kubeconfig --region ap-southeast-1 --name apper-ckad-prep-cluster-2025
 ```
 
 Verify access to the cluster:
