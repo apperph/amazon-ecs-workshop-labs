@@ -1,4 +1,4 @@
-# Lab 15: Creating a Podman "Hello World" on Amazon EKS with Amazon ECR
+# Lab 16: Creating a Podman "Hello World" on Amazon EKS with Amazon ECR
 
 ## Objective
 
